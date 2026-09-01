@@ -20,7 +20,7 @@ export class HomePage {
         await cookies.acceptCookiesIfPresent()
 
 
-        const bredBandDropDownLink = this.page.getByRole('button', { name: /Bredband|Broadband/i });
+        const bredBandDropDownLink = this.page.locator('[data-test="Bredband"]').first();
         await expect(bredBandDropDownLink).toBeVisible({
             timeout: 15000
         })
