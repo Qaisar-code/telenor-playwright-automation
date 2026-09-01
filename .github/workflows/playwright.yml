@@ -1,24 +1,22 @@
-name: Telenor Playwright Tests
-
+name: Playwright Tests
 
 on:
-
   push:
+    branches:
+      - main
+      - develop
 
-  pull_request:
-
+permissions:
+  contents: write
 
 
 jobs:
 
   test:
 
-
     runs-on: ubuntu-latest
 
-
     steps:
-
 
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -27,16 +25,11 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-
-          node-version: 22
-
-
-      - name: Install Allure Commandline
-        run: npm install -g allure-commandline
+          node-version: 24
 
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
 
       - name: Install Playwright browsers
@@ -44,9 +37,7 @@ jobs:
 
 
       - name: Run tests
-        run: npm test -- --format progress
-        env:
-          CI: true
+        run: npm test
 
 
       - name: Generate Allure report
@@ -58,12 +49,13 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-
           name: allure-report
+          path: allure-report
 
-          path: allure-report/
 
-      - name: Run tests
-        env:
-          CI: true
-        run: npm test -- --format progress
+      - name: Deploy Allure Report to GitHub Pages
+        if: always()
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: allure-report
