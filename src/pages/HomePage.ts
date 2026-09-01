@@ -27,6 +27,9 @@ export class HomePage {
         await bredBandDropDownLink.click()
 
         const clickOnBroadBandViaFiber = this.page.locator('a[href="/handla/bredband/"]').nth(1)
+        await expect(clickOnBroadBandViaFiber).toBeVisible({
+            timeout: 15000
+        })
         await clickOnBroadBandViaFiber.click()
     }
 
