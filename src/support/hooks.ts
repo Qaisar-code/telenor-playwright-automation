@@ -11,9 +11,13 @@ setDefaultTimeout(60 * 1000);
 Before(async function (this: CustomWorld) {
 
 
+    const headless = process.env.CI ? true : false;
+
+
     this.browser = await chromium.launch({
 
-        headless: false,
+        headless,
+
         args: ['--start-maximized']
 
     });
@@ -48,7 +52,9 @@ Before(async function (this: CustomWorld) {
     });
 
 
+
     this.page = await this.context.newPage();
+
 
 
 });
@@ -62,37 +68,44 @@ After(async function (this: CustomWorld, scenario) {
         .replace(/[^a-zA-Z0-9]/g, "_");
 
 
-    const videoPath = await this.page.video()?.path();
-
-
     const tracePath = `test-results/${scenarioName}-trace.zip`;
+
+
+    const videoPath = this.page
+        ? await this.page.video()?.path()
+        : undefined;
+
 
 
     if (scenario.result?.status === Status.FAILED) {
 
 
-        const screenshotPath = `screenshots/${scenarioName}.png`;
+        if (this.page) {
 
 
-        const screenshot = await this.page.screenshot({
+            const screenshot = await this.page.screenshot({
 
-            path: screenshotPath,
+                path: `screenshots/${scenarioName}.png`,
 
-            fullPage: true
+                fullPage: true
 
-        });
+            });
 
 
-        await this.attach(
 
-            screenshot,
+            await this.attach(
 
-            {
-                mediaType: "image/png",
-                fileName: `${scenarioName}.png`
-            }
+                screenshot,
 
-        );
+                {
+                    mediaType: "image/png",
+                    fileName: `${scenarioName}.png`
+                }
+
+            );
+
+        }
+
 
 
         await this.context.tracing.stop({
@@ -113,14 +126,25 @@ After(async function (this: CustomWorld, scenario) {
 
 
 
-    await this.page.close();
+    // Close browser resources safely
+
+    if (this.page) {
+
+        await this.page.close();
+
+    }
 
 
-    await this.context.close();
+    if (this.context) {
+
+        await this.context.close();
+
+    }
 
 
 
-    // Attach video to Allure after context is closed
+    // Attach video after context close
+
     if (scenario.result?.status === Status.FAILED && videoPath) {
 
 
@@ -142,7 +166,8 @@ After(async function (this: CustomWorld, scenario) {
 
 
 
-    // Attach trace to Allure
+    // Attach trace
+
     if (scenario.result?.status === Status.FAILED && fs.existsSync(tracePath)) {
 
 
@@ -164,7 +189,12 @@ After(async function (this: CustomWorld, scenario) {
 
 
 
-    await this.browser.close();
+    if (this.browser) {
+
+        await this.browser.close();
+
+    }
+
 
 
 });
