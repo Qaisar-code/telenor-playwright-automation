@@ -60,3 +60,8 @@ jobs:
           name: allure-report
 
           path: allure-report/
+
+      - name: Run tests
+        env:
+          CI: true
+        run: npm test -- --format progress

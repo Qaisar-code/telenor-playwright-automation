@@ -20,18 +20,23 @@ export class HomePage {
         await cookies.acceptCookiesIfPresent()
 
 
-        const bredBandDropDownLink = this.page.locator('[data-test="Bredband"]').first()
+        const bredBandDropDownLink = this.page.getByRole('button', { name: /Bredband|Broadband/i });
         await expect(bredBandDropDownLink).toBeVisible({
             timeout: 15000
         })
         await bredBandDropDownLink.click()
 
-        const clickOnBroadBandViaFiber = this.page.locator('a[href="/handla/bredband/"]').nth(1)
-        await expect(clickOnBroadBandViaFiber).toBeVisible({
-            timeout: 15000
-        })
-        await clickOnBroadBandViaFiber.click()
+        const clickOnBroadBandViaFiber = this.page.getByRole('link', { name: /Bredband via fiber|Fiber broadband/i })
+
+
+await expect(clickOnBroadBandViaFiber).toBeVisible({
+    timeout: 15000
+});
+
+
+await clickOnBroadBandViaFiber.click();
     }
 
 
 }
+
