@@ -21,20 +21,15 @@ export class HomePage {
 
 
         const bredBandDropDownLink = this.page.locator('[data-test="Bredband"]').first();
-        await expect(bredBandDropDownLink).toBeVisible({
-            timeout: 15000
-        })
         await bredBandDropDownLink.click()
 
         const clickOnBroadBandViaFiber = this.page.getByRole('link', { name: /Bredband via fiber|Fiber broadband/i })
+        await expect(clickOnBroadBandViaFiber).toBeVisible({
+            timeout: 15000
+        });
 
 
-await expect(clickOnBroadBandViaFiber).toBeVisible({
-    timeout: 15000
-});
-
-
-await clickOnBroadBandViaFiber.click()
+        await clickOnBroadBandViaFiber.click()
     }
 
 
