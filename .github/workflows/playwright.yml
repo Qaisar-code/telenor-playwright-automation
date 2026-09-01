@@ -45,6 +45,8 @@ jobs:
 
       - name: Run tests
         run: npm test -- --format progress
+        env:
+          CI: true
 
 
       - name: Generate Allure report

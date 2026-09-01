@@ -25,7 +25,11 @@ Before(async function (this: CustomWorld) {
 
     this.context = await this.browser.newContext({
 
-        viewport: null,
+        viewport: {
+        width: 1920,
+        height: 1080
+    },
+
 
         recordVideo: {
 
