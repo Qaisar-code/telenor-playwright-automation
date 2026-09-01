@@ -34,7 +34,7 @@ await expect(clickOnBroadBandViaFiber).toBeVisible({
 });
 
 
-await clickOnBroadBandViaFiber.click();
+await clickOnBroadBandViaFiber.click()
     }
 
 
