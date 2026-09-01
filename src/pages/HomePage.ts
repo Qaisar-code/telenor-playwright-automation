@@ -19,7 +19,7 @@ export class HomePage {
         const cookies = new Cookies(this.page)
         await cookies.acceptCookiesIfPresent()
 
-        await this.page.waitForLoadState("networkidle");
+        await this.page.waitForLoadState("domcontentloaded");
         const bredBandDropDownLink = this.page.locator('[data-test="Bredband"]').first();
         await expect(bredBandDropDownLink).toBeVisible({
             timeout: 30000
