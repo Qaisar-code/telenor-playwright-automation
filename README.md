@@ -88,3 +88,6 @@ The pipeline:
 6. Generates Allure report
 7. Uploads report artifact
 
+## CI Status
+
+GitHub Actions executes automation tests on every push and pull request.
