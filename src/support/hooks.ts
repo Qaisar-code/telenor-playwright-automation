@@ -3,24 +3,18 @@ import { chromium } from "playwright";
 import { CustomWorld } from "./world";
 import fs from "fs";
 
-
 setDefaultTimeout(60 * 1000);
-
 
 
 Before(async function (this: CustomWorld) {
 
-
-    const headless = process.env.CI ? true : false;
-
-
     this.browser = await chromium.launch({
-    headless: true,
-    args: [
-        "--disable-dev-shm-usage",
-        "--no-sandbox"
-    ]
-});
+        headless: true,
+        args: [
+            "--disable-dev-shm-usage",
+            "--no-sandbox"
+        ]
+    });
 
 
     this.context = await this.browser.newContext({
@@ -30,16 +24,12 @@ Before(async function (this: CustomWorld) {
             height: 1080
         },
 
-
         recordVideo: {
-
             dir: "videos/",
-
             size: {
                 width: 1920,
                 height: 1080
             }
-
         }
 
     });
@@ -48,21 +38,16 @@ Before(async function (this: CustomWorld) {
     await this.context.tracing.start({
 
         screenshots: true,
-
         snapshots: true,
-
         sources: true
 
     });
-
 
 
     this.page = await this.context.newPage();
 
     this.page.setDefaultTimeout(30000);
     this.page.setDefaultNavigationTimeout(60000);
-
-
 
 });
 
@@ -75,65 +60,78 @@ After(async function (this: CustomWorld, scenario) {
         .replace(/[^a-zA-Z0-9]/g, "_");
 
 
-    const tracePath = `test-results/${scenarioName}-trace.zip`;
+    const tracePath =
+        `test-results/${scenarioName}-trace.zip`;
 
 
-    const videoPath = this.page
-        ? await this.page.video()?.path()
-        : undefined;
+    let videoPath;
 
 
+    if (this.page) {
+
+        videoPath = await this.page.video()?.path();
+
+    }
+
+
+
+    // FAILED TEST HANDLING
 
     if (scenario.result?.status === Status.FAILED) {
 
 
         if (this.page) {
 
+            const screenshot =
+                await this.page.screenshot({
 
-            const screenshot = await this.page.screenshot({
+                    path: `screenshots/${scenarioName}.png`,
+                    fullPage: true
 
-                path: `screenshots/${scenarioName}.png`,
-
-                fullPage: true
-
-            });
-
+                });
 
 
             await this.attach(
-
                 screenshot,
-
                 {
                     mediaType: "image/png",
                     fileName: `${scenarioName}.png`
                 }
-
             );
 
         }
 
 
 
-        await this.context.tracing.stop({
+        // stop tracing only if context exists
 
-            path: tracePath
+        if (this.context) {
 
-        });
+            await this.context.tracing.stop({
+
+                path: tracePath
+
+            });
+
+        }
 
 
     }
+
     else {
 
 
-        await this.context.tracing.stop();
+        if (this.context) {
 
+            await this.context.tracing.stop();
+
+        }
 
     }
 
 
 
-    // Close browser resources safely
+    // close page
 
     if (this.page) {
 
@@ -141,6 +139,9 @@ After(async function (this: CustomWorld, scenario) {
 
     }
 
+
+
+    // close context
 
     if (this.context) {
 
@@ -150,12 +151,17 @@ After(async function (this: CustomWorld, scenario) {
 
 
 
-    // Attach video after context close
+    // attach video
 
-    if (scenario.result?.status === Status.FAILED && videoPath) {
+    if (
+        scenario.result?.status === Status.FAILED &&
+        videoPath &&
+        fs.existsSync(videoPath)
+    ) {
 
 
-        const video = fs.readFileSync(videoPath);
+        const video =
+            fs.readFileSync(videoPath);
 
 
         await this.attach(
@@ -173,12 +179,16 @@ After(async function (this: CustomWorld, scenario) {
 
 
 
-    // Attach trace
+    // attach trace
 
-    if (scenario.result?.status === Status.FAILED && fs.existsSync(tracePath)) {
+    if (
+        scenario.result?.status === Status.FAILED &&
+        fs.existsSync(tracePath)
+    ) {
 
 
-        const trace = fs.readFileSync(tracePath);
+        const trace =
+            fs.readFileSync(tracePath);
 
 
         await this.attach(
@@ -196,12 +206,13 @@ After(async function (this: CustomWorld, scenario) {
 
 
 
+    // close browser
+
     if (this.browser) {
 
         await this.browser.close();
 
     }
-
 
 
 });
