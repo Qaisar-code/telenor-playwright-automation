@@ -119,16 +119,10 @@ After(async function (this: CustomWorld, scenario) {
     }
 
     else {
-
-
         if (this.context) {
-
             await this.context.tracing.stop();
-
         }
-
     }
-
 
 
     // close page
