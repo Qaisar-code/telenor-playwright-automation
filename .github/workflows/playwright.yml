@@ -48,14 +48,14 @@ jobs:
 
       - name: Run tests
         continue-on-error: true
-        run: npm test -- --format progress
+        run: npm test
 
 
       - name: Check Allure results
         if: always()
         run: |
           echo "Checking allure-results folder"
-          ls -la allure-results
+          find allure-results -type f || true
 
 
       - name: Generate Allure report
