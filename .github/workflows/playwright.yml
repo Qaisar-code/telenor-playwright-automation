@@ -7,15 +7,16 @@ on:
 
   workflow_dispatch:
 
+permissions:
+  contents: write
+  pages: write
+  id-token: write
 
 jobs:
 
   test:
 
     runs-on: ubuntu-latest
-
-    permissions:
-      contents: write
 
     steps:
 
@@ -27,11 +28,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
-
-
-      - name: Install Allure Commandline
-        run: npm install -g allure-commandline
 
 
       - name: Install dependencies
@@ -42,40 +38,49 @@ jobs:
         run: npx playwright install --with-deps
 
 
-      - name: Create Allure results folder
-        run: mkdir -p allure-results
-
-
       - name: Run tests
         continue-on-error: true
         run: npm test
 
 
       - name: Check Allure results
-        if: always()
         run: |
           echo "Checking allure-results folder"
-          find allure-results -type f || true
+          ls -la allure-results || true
+
+
+      - name: Install Allure
+        run: npm install -g allure-commandline
 
 
       - name: Generate Allure report
-        if: always()
         run: |
           allure generate allure-results --clean -o allure-report
 
 
-      - name: Upload Allure Report
-        if: always()
-        uses: actions/upload-artifact@v4
+      - name: Prepare GitHub Pages
+        run: |
+          touch allure-report/.nojekyll
+
+
+      - name: Upload Pages Artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          name: allure-report
           path: allure-report
 
 
-      - name: Deploy Allure Report to GitHub Pages
-        if: always()
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./allure-report
-          publish_branch: gh-pages
+  deploy:
+
+    needs: test
+
+    runs-on: ubuntu-latest
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
