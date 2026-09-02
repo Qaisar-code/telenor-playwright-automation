@@ -7,11 +7,20 @@ export class HomePage {
     }
 
     async navigateToTelenor() {
+    await this.page.goto("https://telenor.se/", {
+        waitUntil: "domcontentloaded",
+        timeout: 60000
+    }).catch(async () => {
+        console.log("Retrying page navigation...");
+        
+        await this.page.waitForTimeout(5000);
+
         await this.page.goto("https://telenor.se/", {
             waitUntil: "domcontentloaded",
             timeout: 60000
         });
-    }
+    });
+}
 
 
     async clickOnHandlaBredbandLink(): Promise<void> {
