@@ -6,20 +6,35 @@ export class HomePage {
 
     }
 
-    async navigateToTelenor() {
-    await this.page.goto("https://telenor.se/", {
-        waitUntil: "domcontentloaded",
-        timeout: 60000
-    }).catch(async () => {
-        console.log("Retrying page navigation...");
-        
-        await this.page.waitForTimeout(5000);
+  async navigateToTelenor() {
 
-        await this.page.goto("https://telenor.se/", {
-            waitUntil: "domcontentloaded",
-            timeout: 60000
-        });
-    });
+    const url = "https://telenor.se/";
+
+    for (let attempt = 1; attempt <= 3; attempt++) {
+
+        try {
+
+            console.log(`Opening Telenor. Attempt ${attempt}`);
+
+            await this.page.goto(url, {
+                waitUntil: "domcontentloaded",
+                timeout: 60000
+            });
+
+            console.log("Telenor opened successfully");
+            return;
+
+        } catch (error) {
+
+            console.log(`Attempt ${attempt} failed`);
+
+            if (attempt === 3) {
+                throw error;
+            }
+
+            await this.page.waitForTimeout(5000);
+        }
+    }
 }
 
 

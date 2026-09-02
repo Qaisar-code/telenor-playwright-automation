@@ -26,9 +26,9 @@ Before(async function (this: CustomWorld) {
     this.context = await this.browser.newContext({
 
         viewport: {
-        width: 1920,
-        height: 1080
-    },
+            width: 1920,
+            height: 1080
+        },
 
 
         recordVideo: {
@@ -58,6 +58,9 @@ Before(async function (this: CustomWorld) {
 
 
     this.page = await this.context.newPage();
+
+    this.page.setDefaultTimeout(30000);
+    this.page.setDefaultNavigationTimeout(60000);
 
 
 
