@@ -11,7 +11,7 @@ export class HandlaBredbandPage {
     }
 
     async inputAddressInSearchBar(): Promise<void> {
-        const searchBar = this.page.locator('[data-test="address-search-input"] input');
+        const searchBar = this.page.locator('[data-test="address-search-inputt"] input');
         await expect(searchBar).toBeVisible({ timeout: 15000 })
         await searchBar.fill(
             `${addressData.broadbandAddress.street}, ${addressData.broadbandAddress.city}`
