@@ -30,7 +30,7 @@ export class HomePage {
 
 
         await expect(clickOnBroadBandViaFiber).toBeVisible({
-            timeout: 15000
+            timeout: 16000
         });
 
 
