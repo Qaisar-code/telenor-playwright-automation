@@ -6,43 +6,14 @@ export class HomePage {
 
     }
 
-  async navigateToTelenor() {
+    async navigateToTelenor() {
 
-    const url = "https://telenor.se/";
+        await this.page.goto("https://telenor.se/", {
+            waitUntil: "domcontentloaded",
+            timeout: 90000
+        });
 
-    for (let attempt = 1; attempt <= 5; attempt++) {
-
-        try {
-
-            console.log(`Attempt ${attempt}: Opening ${url}`);
-
-            await this.page.goto(url, {
-                waitUntil: "networkidle",
-                timeout: 90000
-            });
-
-            await this.page.waitForLoadState("domcontentloaded");
-
-            console.log("Telenor loaded successfully");
-            return;
-
-        } catch (error) {
-
-            console.log(`Attempt ${attempt} failed`);
-
-            if (attempt === 5) {
-                throw error;
-            }
-
-            await this.page.waitForTimeout(10000);
-
-            await this.page.reload({
-                waitUntil: "domcontentloaded",
-                timeout: 90000
-            }).catch(() => {});
-        }
     }
-}
 
 
     async clickOnHandlaBredbandLink(): Promise<void> {
