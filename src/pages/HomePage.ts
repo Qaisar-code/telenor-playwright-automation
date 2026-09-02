@@ -10,29 +10,36 @@ export class HomePage {
 
     const url = "https://telenor.se/";
 
-    for (let attempt = 1; attempt <= 3; attempt++) {
+    for (let attempt = 1; attempt <= 5; attempt++) {
 
         try {
 
-            console.log(`Opening Telenor. Attempt ${attempt}`);
+            console.log(`Attempt ${attempt}: Opening ${url}`);
 
             await this.page.goto(url, {
-                waitUntil: "domcontentloaded",
-                timeout: 60000
+                waitUntil: "networkidle",
+                timeout: 90000
             });
 
-            console.log("Telenor opened successfully");
+            await this.page.waitForLoadState("domcontentloaded");
+
+            console.log("Telenor loaded successfully");
             return;
 
         } catch (error) {
 
             console.log(`Attempt ${attempt} failed`);
 
-            if (attempt === 3) {
+            if (attempt === 5) {
                 throw error;
             }
 
-            await this.page.waitForTimeout(5000);
+            await this.page.waitForTimeout(10000);
+
+            await this.page.reload({
+                waitUntil: "domcontentloaded",
+                timeout: 90000
+            }).catch(() => {});
         }
     }
 }

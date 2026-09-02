@@ -15,12 +15,12 @@ Before(async function (this: CustomWorld) {
 
 
     this.browser = await chromium.launch({
-
-        headless,
-
-        args: ['--start-maximized']
-
-    });
+    headless: true,
+    args: [
+        "--disable-dev-shm-usage",
+        "--no-sandbox"
+    ]
+});
 
 
     this.context = await this.browser.newContext({
