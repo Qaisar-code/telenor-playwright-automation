@@ -15,13 +15,15 @@ module.exports = {
     paths: [
       "features/**/*.feature"
     ],
+
     format: [
-
       "progress",
-
       "allure-cucumberjs/reporter"
+    ],
 
-    ]
+    formatOptions: {
+      resultsDir: "allure-results"
+    }
 
   }
 
